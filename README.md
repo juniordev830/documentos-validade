@@ -28,7 +28,7 @@ Os testes cobrem invariantes e entradas inválidas. A preparação local não di
 
 Código e exemplos: `Main.kt e examples/documentos.tsv`. Os dados de exemplo são fictícios. As funções de domínio são separadas da leitura de argumentos no mesmo arquivo para manter a primeira versão pequena e revisável.
 
-Não envia notificações nem acessa calendários. Títulos limitados a 40 caracteres ASCII nesta versão para manter linhas válidas de iCalendar. Compose, Room e alarmes ficam para uma próxima etapa.
+Não envia notificações nem acessa calendários. Títulos limitados a 30 caracteres ASCII nesta versão para manter linhas válidas de iCalendar. Compose, Room e alarmes ficam para uma próxima etapa.
 
 A proposta completa de evolução está em `ARQUITETURA.md`. As tecnologias propostas nessa arquitetura não devem ser interpretadas como dependências já implementadas.
 

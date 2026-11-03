@@ -5,7 +5,7 @@ import java.util.UUID
 data class Document(val title: String, val date: LocalDate)
 fun escapeIcs(text: String): String = text.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")
 fun calendar(documents: List<Document>, today: LocalDate): String {
-    require(documents.all { it.title.isNotBlank() && it.title.length <= 40 && it.title.all { c -> c.code in 32..126 } }) { "Nesta versão o título deve ter 1 a 40 caracteres ASCII" }
+    require(documents.all { it.title.isNotBlank() && it.title.length <= 30 && it.title.all { c -> c.code in 32..126 } }) { "Nesta versão o título deve ter 1 a 30 caracteres ASCII" }
     val fmt=DateTimeFormatter.BASIC_ISO_DATE
     val lines=mutableListOf("BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Documentos Validade//PT-BR","CALSCALE:GREGORIAN")
     for (doc in documents.sortedBy { it.date }) {

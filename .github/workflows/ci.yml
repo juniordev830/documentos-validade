@@ -17,3 +17,7 @@ jobs:
           /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt -include-runtime -d app.jar
       - name: Testar regras de domínio
         run: java -jar app.jar --self-test
+      - name: Validar exportação de alertas ICS
+        run: |
+          java -jar app.jar 2026-11-03 examples/documentos.tsv --alerta-dias 7 | grep -F 'TRIGGER;RELATED=START:-P7D'
+          java -jar app.jar 2026-11-03 examples/documentos.tsv | grep -F 'BEGIN:VEVENT'

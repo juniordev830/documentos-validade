@@ -1,0 +1,20 @@
+{
+  "name": "documentos-validade",
+  "title": "Documentos e Validade",
+  "description": "Organização de datas de vencimento com exportação para calendário.",
+  "primary_language": "Kotlin",
+  "proposed_technologies": "Kotlin, Jetpack Compose, Room e iCalendar",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Cadastrar título e validade",
+    "Listar próximos vencimentos",
+    "Exportar lembretes em formato de calendário"
+  ],
+  "implemented_technologies": [
+    "Kotlin",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

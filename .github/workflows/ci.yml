@@ -14,6 +14,15 @@ jobs:
         run: |
           curl --fail --location --retry 2 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.1.0/kotlin-compiler-2.1.0.zip
           unzip -q kotlin.zip -d /tmp/kotlin-tools
-          /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt -include-runtime -d app.jar
-      - name: Testar regras de domínio
+          /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt Tests.kt -include-runtime -d app.jar
+      - name: Executar 90 verificações automatizadas
         run: java -jar app.jar --self-test
+      - name: Verificar exportação e comandos de consulta
+        run: |
+          java -jar app.jar 2026-11-08 examples/documentos.tsv > /tmp/documentos.ics
+          grep -q '^BEGIN:VCALENDAR' /tmp/documentos.ics
+          grep -q 'DTEND;VALUE=DATE:' /tmp/documentos.ics
+          java -jar app.jar listar 2026-11-08 examples/documentos.tsv > /tmp/documentos-lista.tsv
+          grep -q 'dias_restantes' /tmp/documentos-lista.tsv
+          java -jar app.jar relatorio 2026-11-08 examples/documentos.tsv > /tmp/documentos-relatorio.txt
+          grep -q 'Total: 2' /tmp/documentos-relatorio.txt

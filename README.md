@@ -39,3 +39,7 @@ A proposta completa de evolução está em `ARQUITETURA.md`. As tecnologias prop
 - [ ] Exportar lembretes em formato de calendário — ampliar o núcleo atual até o fluxo completo.
 
 Licença: ainda não definida.
+
+## Roteiro de qualidade
+
+Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.

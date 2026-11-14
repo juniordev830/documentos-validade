@@ -43,3 +43,14 @@ Licença: ainda não definida.
 ## Roteiro de qualidade
 
 Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
+
+
+## Consultar próximos vencimentos
+
+```sh
+java -jar app.jar --proximos 2026-11-03 30 examples/documentos.tsv
+```
+
+Lista documentos que vencem da data informada até 30 dias depois, incluindo os dois extremos. Documentos já vencidos ficam fora da consulta. Use `0` para consultar apenas o dia informado; a janela aceita de 0 a 3650 dias. A saída TSV é ordenada por validade e, em caso de empate, por título. Sem resultados, mantém apenas o cabeçalho.
+
+A consulta não altera o arquivo e não envia notificações. O comando original de exportação iCalendar continua disponível, com seu limite de títulos ASCII. A função `upcoming(documents, today, windowDays)` fornece a mesma consulta para outras interfaces.

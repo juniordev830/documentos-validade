@@ -13,6 +13,7 @@ jobs:
       - name: Instalar compilador Kotlin 2.1.0
         run: |
           curl --fail --location --retry 2 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.1.0/kotlin-compiler-2.1.0.zip
+          echo 'b6698d5728ad8f9edcdd01617d638073191d8a03139cc538a391b4e3759ad297  kotlin.zip' | sha256sum --check --strict
           unzip -q kotlin.zip -d /tmp/kotlin-tools
           /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt -include-runtime -d app.jar
       - name: Testar regras de domínio

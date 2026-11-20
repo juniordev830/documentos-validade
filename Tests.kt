@@ -163,8 +163,7 @@ object DocumentTests {
             oversized.writeBytes(ByteArray(2_000_001))
             assertFails { readDocuments(oversized) }
         } finally {
-            file.delete()
-            Files.deleteIfExists(directory)
+            directory.toFile().deleteRecursively()
         }
     }
 

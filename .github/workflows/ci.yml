@@ -15,10 +15,19 @@ jobs:
           curl --fail --location --retry 2 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.1.0/kotlin-compiler-2.1.0.zip
           echo 'b6698d5728ad8f9edcdd01617d638073191d8a03139cc538a391b4e3759ad297  kotlin.zip' | sha256sum --check --strict
           unzip -q kotlin.zip -d /tmp/kotlin-tools
-          /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt -include-runtime -d app.jar
-      - name: Testar regras de domínio
+          /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt Tests.kt -include-runtime -d app.jar
+      - name: Executar 90 verificações automatizadas
         run: java -jar app.jar --self-test
 
+      - name: Verificar exportação e comandos de consulta
+        run: |
+          java -jar app.jar 2026-11-08 examples/documentos.tsv > "$RUNNER_TEMP/documentos.ics"
+          grep -q '^BEGIN:VCALENDAR' "$RUNNER_TEMP/documentos.ics"
+          grep -q 'DTEND;VALUE=DATE:' "$RUNNER_TEMP/documentos.ics"
+          java -jar app.jar listar 2026-11-08 examples/documentos.tsv > "$RUNNER_TEMP/documentos-lista.tsv"
+          grep -q 'dias_restantes' "$RUNNER_TEMP/documentos-lista.tsv"
+          java -jar app.jar relatorio 2026-11-08 examples/documentos.tsv > "$RUNNER_TEMP/documentos-relatorio.txt"
+          grep -q 'Total: 2' "$RUNNER_TEMP/documentos-relatorio.txt"
       - name: Testar CLI e compatibilidade
         run: |
           python3 - <<'PY'
@@ -27,12 +36,14 @@ jobs:
           with tempfile.TemporaryDirectory() as tmp:
               path = Path(tmp) / "documentos.tsv"
               path.write_text("titulo\tvalidade\nHoje\t2026-12-31\nLimite\t2027-01-07\nFora\t2027-01-08\n", encoding="utf-8")
-              result = subprocess.run(["java","-jar","app.jar","--proximos","2026-12-31","7",str(path)],capture_output=True,text=True)
+              result = subprocess.run(["java","-jar","app.jar","listar","2026-12-31",str(path),"--dias","7"],capture_output=True,text=True)
               assert result.returncode == 0, result.stderr
-              assert result.stdout.splitlines() == ["titulo\tvalidade","Hoje\t2026-12-31","Limite\t2027-01-07"]
+              assert result.stdout.splitlines()[0] == "titulo\tvalidade\tcategoria\tdias_restantes\tstatus"
+              assert "Hoje\t2026-12-31\tGeral\t0\tVENCE_HOJE" in result.stdout
+              assert "Limite\t2027-01-07\tGeral\t7\tPROXIMO" in result.stdout
               legacy = subprocess.run(["java","-jar","app.jar","2026-12-31",str(path)],capture_output=True,text=True)
               assert legacy.returncode == 0 and "BEGIN:VCALENDAR" in legacy.stdout
-              bad = subprocess.run(["java","-jar","app.jar","--proximos","2026-12-31","-1",str(path)],capture_output=True,text=True)
+              bad = subprocess.run(["java","-jar","app.jar","listar","2026-12-31",str(path),"--dias","-1"],capture_output=True,text=True)
               assert bad.returncode == 2 and not bad.stdout
           print("3 cenários CLI OK")
           PY

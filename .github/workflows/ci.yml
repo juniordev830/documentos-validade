@@ -36,12 +36,12 @@ jobs:
           with tempfile.TemporaryDirectory() as tmp:
               path = Path(tmp) / "documentos.tsv"
               path.write_text("titulo\tvalidade\nHoje\t2026-12-31\nLimite\t2027-01-07\nFora\t2027-01-08\n", encoding="utf-8")
-              result = subprocess.run(["java","-jar","app.jar","--proximos","2026-12-31","7",str(path)],capture_output=True,text=True)
+              result = subprocess.run(["java","-jar","app.jar","listar","2026-12-31",str(path),"--dias","7"],capture_output=True,text=True)
               assert result.returncode == 0, result.stderr
               assert result.stdout.splitlines() == ["titulo\tvalidade","Hoje\t2026-12-31","Limite\t2027-01-07"]
               legacy = subprocess.run(["java","-jar","app.jar","2026-12-31",str(path)],capture_output=True,text=True)
               assert legacy.returncode == 0 and "BEGIN:VCALENDAR" in legacy.stdout
-              bad = subprocess.run(["java","-jar","app.jar","--proximos","2026-12-31","-1",str(path)],capture_output=True,text=True)
+              bad = subprocess.run(["java","-jar","app.jar","listar","2026-12-31",str(path),"--dias","-1"],capture_output=True,text=True)
               assert bad.returncode == 2 and not bad.stdout
           print("3 cenários CLI OK")
           PY

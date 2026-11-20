@@ -38,7 +38,9 @@ jobs:
               path.write_text("titulo\tvalidade\nHoje\t2026-12-31\nLimite\t2027-01-07\nFora\t2027-01-08\n", encoding="utf-8")
               result = subprocess.run(["java","-jar","app.jar","listar","2026-12-31",str(path),"--dias","7"],capture_output=True,text=True)
               assert result.returncode == 0, result.stderr
-              assert result.stdout.splitlines() == ["titulo\tvalidade","Hoje\t2026-12-31","Limite\t2027-01-07"]
+              assert result.stdout.splitlines()[0] == "titulo\\tvalidade\\tcategoria\\tdias_restantes\\tstatus"
+          assert "Hoje\\t2026-12-31\\tGeral\\t0\\tVENCE_HOJE" in result.stdout
+          assert "Limite\\t2027-01-07\\tGeral\\t7\\tPROXIMO" in result.stdout
               legacy = subprocess.run(["java","-jar","app.jar","2026-12-31",str(path)],capture_output=True,text=True)
               assert legacy.returncode == 0 and "BEGIN:VCALENDAR" in legacy.stdout
               bad = subprocess.run(["java","-jar","app.jar","listar","2026-12-31",str(path),"--dias","-1"],capture_output=True,text=True)

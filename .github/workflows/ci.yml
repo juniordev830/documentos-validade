@@ -15,10 +15,19 @@ jobs:
           curl --fail --location --retry 2 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.1.0/kotlin-compiler-2.1.0.zip
           echo 'b6698d5728ad8f9edcdd01617d638073191d8a03139cc538a391b4e3759ad297  kotlin.zip' | sha256sum --check --strict
           unzip -q kotlin.zip -d /tmp/kotlin-tools
-          /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt -include-runtime -d app.jar
-      - name: Testar regras de domínio
+          /tmp/kotlin-tools/kotlinc/bin/kotlinc Main.kt Tests.kt -include-runtime -d app.jar
+      - name: Executar 90 verificações automatizadas
         run: java -jar app.jar --self-test
 
+      - name: Verificar exportação e comandos de consulta
+        run: |
+          java -jar app.jar 2026-11-08 examples/documentos.tsv > "$RUNNER_TEMP/documentos.ics"
+          grep -q '^BEGIN:VCALENDAR' "$RUNNER_TEMP/documentos.ics"
+          grep -q 'DTEND;VALUE=DATE:' "$RUNNER_TEMP/documentos.ics"
+          java -jar app.jar listar 2026-11-08 examples/documentos.tsv > "$RUNNER_TEMP/documentos-lista.tsv"
+          grep -q 'dias_restantes' "$RUNNER_TEMP/documentos-lista.tsv"
+          java -jar app.jar relatorio 2026-11-08 examples/documentos.tsv > "$RUNNER_TEMP/documentos-relatorio.txt"
+          grep -q 'Total: 2' "$RUNNER_TEMP/documentos-relatorio.txt"
       - name: Testar CLI e compatibilidade
         run: |
           python3 - <<'PY'

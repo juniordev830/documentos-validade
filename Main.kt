@@ -56,10 +56,12 @@ fun parseDocuments(tsv: String): List<Document> {
     require(tsv.toByteArray(StandardCharsets.UTF_8).size.toLong() <= MAX_FILE_BYTES) {
         "Arquivo TSV excede 2 MB"
     }
-    val lines = tsv.removePrefix("\uFEFF").lineSequence()
+    val rawLines = tsv.removePrefix("\uFEFF").lineSequence()
         .map { it.removeSuffix("\r") }
-        .filter { it.isNotBlank() }
         .toList()
+    // A final line break is normal; blank rows within the TSV are malformed.
+    val lines = if (rawLines.lastOrNull() == "") rawLines.dropLast(1) else rawLines
+    require(lines.none { it.isBlank() }) { "Linha TSV em branco" }
     require(lines.isNotEmpty()) { "Arquivo TSV vazio" }
     val header = lines.first().split('\t')
     require(header == listOf("titulo", "validade") ||

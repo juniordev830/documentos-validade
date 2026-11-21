@@ -113,6 +113,7 @@ fun saveDocuments(file: File, documents: List<Document>) {
     val text = serializeDocuments(documents)
     val target = file.toPath().toAbsolutePath()
     val directory = target.parent
+    require(!Files.isSymbolicLink(target)) { "Destino simbólico não permitido" }
     require(Files.isDirectory(directory)) { "Diretório de destino inexistente" }
     val temporary = Files.createTempFile(directory, ".documentos-", ".tmp")
     try {

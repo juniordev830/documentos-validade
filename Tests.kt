@@ -139,6 +139,17 @@ object DocumentTests {
         val directory = Files.createTempDirectory("documentos-test-")
         val file = File(directory.toFile(), "documentos.tsv")
         try {
+            val original = directory.resolve("original.tsv")
+            val link = directory.resolve("symbolic-register.tsv")
+            Files.writeString(original, "unmodified")
+            try {
+                Files.createSymbolicLink(link, original.fileName)
+                assertFails { saveDocuments(link.toFile(), fixture()) }
+                assertEquals("unmodified", Files.readString(original))
+            } finally {
+                Files.deleteIfExists(link)
+                Files.deleteIfExists(original)
+            }
             saveDocuments(file, fixture())
             assertEquals(fixture().sortedBy { it.date }, readDocuments(file))
             assertThat(executeCommand(arrayOf("listar", today.toString(), file.path)).contains("VENCIDO"), "Listagem CLI")

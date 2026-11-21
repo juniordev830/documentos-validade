@@ -59,6 +59,9 @@ object DocumentTests {
         assertThat(serializeDocuments(emptyList()).startsWith("titulo\tvalidade"), "Cabeçalho obrigatório")
         assertFails { parseDocuments("") }
         assertFails { parseDocuments("foo\tbar\n") }
+        assertFails { parseDocuments("titulo\tvalidade\n\nCNH\t2026-12-31\n") }
+        assertFails { parseDocuments("titulo\tvalidade\nCNH\t2026-12-31\n\n") }
+        assertEquals(emptyList<Document>(), parseDocuments("titulo\tvalidade\n"))
         assertFails { parseDocuments("titulo\tvalidade\nCNH\n") }
         assertFails { parseDocuments("titulo\tvalidade\nCNH\t2026-02-30\n") }
         assertFails { parseDocuments("titulo\tvalidade\nCNH\t2026-12-31\textra\n") }
@@ -136,6 +139,17 @@ object DocumentTests {
         val directory = Files.createTempDirectory("documentos-test-")
         val file = File(directory.toFile(), "documentos.tsv")
         try {
+            val original = directory.resolve("original.tsv")
+            val link = directory.resolve("symbolic-register.tsv")
+            Files.writeString(original, "unmodified")
+            try {
+                Files.createSymbolicLink(link, original.fileName)
+                assertFails { saveDocuments(link.toFile(), fixture()) }
+                assertEquals("unmodified", Files.readString(original))
+            } finally {
+                Files.deleteIfExists(link)
+                Files.deleteIfExists(original)
+            }
             saveDocuments(file, fixture())
             assertEquals(fixture().sortedBy { it.date }, readDocuments(file))
             assertThat(executeCommand(arrayOf("listar", today.toString(), file.path)).contains("VENCIDO"), "Listagem CLI")

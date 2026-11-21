@@ -73,3 +73,5 @@ Títulos são únicos por combinação de nome (ignorando maiúsculas/minúscula
 Não envia notificações, não acessa calendários e não transmite dados pela rede. O calendário exportado pode ser importado manualmente no aplicativo de preferência. Consulte ARQUITETURA.md para ideias futuras, não necessariamente implementadas.
 
 Licença: ainda não definida.
+
+Linhas vazias dentro de um TSV agora são tratadas como entrada malformada em vez de ignoradas silenciosamente; a quebra final de linha e catálogos vazios continuam válidos. Na gravação, destinos que já são links simbólicos são recusados para evitar substituições inesperadas do arquivo de registro.

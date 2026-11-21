@@ -59,6 +59,9 @@ object DocumentTests {
         assertThat(serializeDocuments(emptyList()).startsWith("titulo\tvalidade"), "Cabeçalho obrigatório")
         assertFails { parseDocuments("") }
         assertFails { parseDocuments("foo\tbar\n") }
+        assertFails { parseDocuments("titulo\tvalidade\n\nCNH\t2026-12-31\n") }
+        assertFails { parseDocuments("titulo\tvalidade\nCNH\t2026-12-31\n\n") }
+        assertEquals(emptyList<Document>(), parseDocuments("titulo\tvalidade\n"))
         assertFails { parseDocuments("titulo\tvalidade\nCNH\n") }
         assertFails { parseDocuments("titulo\tvalidade\nCNH\t2026-02-30\n") }
         assertFails { parseDocuments("titulo\tvalidade\nCNH\t2026-12-31\textra\n") }

@@ -209,13 +209,18 @@ fun foldIcsLine(line: String): String {
     var offset = 0
     while (offset < line.length) {
         val codePoint = line.codePointAt(offset)
-        val value = String(Character.toChars(codePoint))
-        val bytes = value.toByteArray(StandardCharsets.UTF_8).size
+        val bytes = when (codePoint) {
+            in 0..0x7f -> 1
+            in 0x80..0x7ff -> 2
+            in 0xd800..0xdfff -> 1 // UTF-8 substitutes malformed UTF-16 with '?'.
+            in 0x800..0xffff -> 3
+            else -> 4
+        }
         if (octets + bytes > 75) {
             result.append("\r\n ")
             octets = 1
         }
-        result.append(value)
+        result.appendCodePoint(codePoint)
         octets += bytes
         offset += Character.charCount(codePoint)
     }
